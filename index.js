@@ -13,7 +13,8 @@ app.use((req, res, next) => {
     next();
 })
 
-app.use('/pet', require('./pets-router'));
+app.use('/employee', require('./server/employee-router'));
+app.use('/company', require('./server/company-router'));
 
 const port = 8080;
 app.listen(port, () => console.log(`Stared server on port ${port}`));
