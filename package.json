@@ -1,7 +1,7 @@
 {
   "name": "pet-rest-api",
   "version": "1.0.0",
-  "description": "Rest api for test react project",
+  "description": "Rest api for simple-cache-orm project",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

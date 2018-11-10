@@ -28,7 +28,7 @@ app.use('/employee', require('./controllers/employee-router'));
 app.use('/company', require('./controllers/company-router'));
 
 
-//error handling
+// error handling
 app.use((err, _1, res, _2) => {
     console.log(err);
 
