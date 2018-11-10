@@ -8,30 +8,37 @@ const Employee = models.Employee;
 const Company = models.Company;
 const Person = models.Person;
 
+const errors = require('./errors');
+
+const notFoundError = errors.notFoundError;
+const conflictError = errors.conflictError;
+const badRequestError = errors.badRequestError;
+
 module.exports = require('express-promise-router')()
 .post('/', (req, res) => {
     const employeeFields = req.body;
 
     return Session.transact(() => employee
-        .existId(employeeFields.ID)
-        .tap(exists => exists 
-            ? () => res.status(409)
-                .json({message: 'Employee already exists'})
-            : Object.assign(new Employee(), employeeFields)
-                .save()
-                .tap(() => res.sendStatus(200))))
+            .existId(employeeFields.ID)
+            .tap(exists => exists || conflictError('employee'))
+            .flatMap(() => 
+                Object.assign(new Employee(), employeeFields)
+                    .save()))
+        .tap(saved => res.json(saved));
     })
-.put('/', (req, res) => {
-    return Session.exec(() => employee.openId(req.body.ID)
-        .tap(employeeToUpdate => employeeToUpdate 
-                ? Object.assign(employeeToUpdate, employee)
-                    .save()
-                    .tap(p => res.json(p))
-                : res.sendStatus(404)));
-})
+.put('/', (req, res) => 
+    Session.transact(() => employee.openId(req.body.ID)
+            .tap(employeeToUpdate => employeeToUpdate 
+                || notFoundError('employee'))
+            .flatMap(employeeToUpdate =>
+                Object.assign(employeeToUpdate, employee)
+                    .save()))
+        .tap(updated => res.json(updated)))
 .delete('/:employeeId', (req, res) => {
     const id = req.params.employeeId;
-    return Session.exec(() => employee.deleteId(id));
+    return Session.transact(() => employee.deleteId(id))
+            .then(() => "acknowledged")
+        .tap(ack => res.json(ack));
 })
 .get('/list', (_, res) => {
     return Session.exec(() => Employee.findAll())
@@ -39,43 +46,33 @@ module.exports = require('express-promise-router')()
 })
 .get('/', (req, res) => {
     const query = req.query;
-    const searchBy = query.Name || query.Company;
-    if (!searchBy) {
-        return res.sendStatus(400);
-    }
-    return Session.exec(() => {
-        return employee.findBy(query)
-            .tap(result => {
-                if (result && result.length) {
-                    res.send(result);
-                } else {
-                    res.status(404)
-                        .json({message: 'Not found'});
-                }
-            });
-    });
+    query.Name || query.Company 
+        || badRequestError('Illegal search field. Search by name or company only');
+
+    return Session.exec(() => employee.findBy(query)
+            .tap(result => result || notFoundError('employee'))
+            .tap(result => result.length || notFoundError('employee')))
+        .tap(company => res.json(company));
 })
 .get('/:employeeId', (req, res) => {
     const id = req.params.employeeId;
     return Session.exec(() => Employee.openId(id)
-        .tap(employee => employee 
-            ? res.json(employee) 
-            : res.status(404).json({message: 'Emploee not found' })));
+            .tap(employee => employee || notFoundError('employee')))
+        .tap(employee => res.json(employee));
 })
 .get('/:employeeId/spouse', (req, res) => {
     const id = req.params.employeeId;
     return Session.exec(() => Employee.openId(id, ['Spouse'])
-        .flatMap(foundEmployee => Person.openId(foundEmployee.Spouse))
-        .tap(spouse => spouse 
-            ? res.json(spouse) 
-            : res.status(404)
-                .json({ message: 'Spouse not found' })));
+            .tap(employee => employee || notFoundError('employee'))
+            .flatMap(foundEmployee => Person.openId(foundEmployee.Spouse))
+            .tap(spouse => spouse || notFoundError('spouse')))
+        .tap(spouse => res.json(spouse));
 })
 .get('/:employeeId/company', (req, res) => {
     const id = req.params.employeeId;
     return Session.exec(() => Employee.openId(id, ['Company'])
-        .flatMap(foundEmployee => Company.openId(foundEmployee.Company))
-        .tap(company => company
-            ? res.json(company)
-            : res.sendStatus(404)));
+            .tap(employee => employee || notFoundError('employee'))
+            .flatMap(foundEmployee => Company.openId(foundEmployee.Company))
+            .tap(company => company || notFoundError('company')))
+        .tap(compay => res.json(company));
 });
