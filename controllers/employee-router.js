@@ -47,10 +47,10 @@ module.exports = require('express-promise-router')()
     if (!searchField) {
         badRequestError('Illegal search field. Search by name or company only');
     }
-    return Session.exec(() => employee.findBy(query))
+    return Session.exec(() => Employee.findBy(query))
             .tap(result => result || notFoundError('employee'))
             .tap(result => result.length || notFoundError('employee'))
-            .tap(company => res.json(company));
+            .tap(employee => res.json(employee));
 })
 .get('/:employeeId', (req, res) => {
     const id = req.params.employeeId;
