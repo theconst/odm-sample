@@ -33,16 +33,23 @@ var Employees = Vue.component('employees-list', {
 });
 
 var Employee = Vue.component('employee-details', {
-    template: '#employees-view-template',
+    template: '#employee-template',
     data: function() {
         return {
-            employee: {}
+            employee: {},
+            company: {},
+            view: true
         }
     },
     mounted: function() {
         var component = this;
         fetchJson(this.$route.path).then(function(result) {
             component.employee = result;
+
+            fetchJson('/company/' + result.Company)
+                .then(function(company) {
+                    component.company =company;
+                });
         });
     }
 });
