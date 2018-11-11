@@ -1,3 +1,5 @@
+'use strict';
+
 const orm = require('cache-simple-orm');
 
 module.exports = orm({

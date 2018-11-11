@@ -1,3 +1,5 @@
+'use strict';
+
 const db = require('./db');
 const Persistent = db.Persistent;
 const r = db.Reader;

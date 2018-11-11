@@ -1,6 +1,7 @@
 /*
  * Server example for simple CRUD application for Cache Intersystems 
  */
+'use strict';
 
 const express = require('express');
 const app = express();
@@ -49,6 +50,9 @@ app.use((err, _1, res, _2) => {
             });
     }
 });
+
+// web content
+app.use('/static', express.static(__dirname + '/public'));
 
 const port = 8080;
 app.listen(port, () => console.log(`Stared server on port ${port}`));
