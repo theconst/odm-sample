@@ -23,7 +23,7 @@ module.exports = require('express-promise-router')()
         || badRequestError('Search by name only');
 
     return Session.exec(() => Company.findBy(searchBy)
-            .tap(result => result && result.length || notFoundError()))
+            .tap(result => result && result.length || notFoundError('company')))
         .tap(company => res.json(company));
 })
 .get('/:companyId', (req, res) => {
@@ -35,14 +35,14 @@ module.exports = require('express-promise-router')()
 .get('/:companyId/employees', (req, res) => {
     const id = req.params.companyId;
     return Session.exec(() => Company.existsId(id)
-            .tap(exists => exists || notFoundError())
+            .tap(exists => exists || notFoundError('company'))
             .flatMap(() => Employee.findBy({'Company': id})))
         .tap(company => res.json(company));
 })
 .get('/:companyId/averageSalary', (req, res) => {
     const id = req.params.companyId;
     return Session.exec(() => Company.openId(id, [])
-            .tap(company => company || notFoundError())
+            .tap(company => company || notFoundError('company'))
             .flatMap(company => company.averageEmployeeSalary()))
         .tap(company => res.json(company));
 });
