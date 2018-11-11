@@ -4,8 +4,6 @@ const db = require('./db');
 const errors = require('./errors');
 const models = require('./models');
 
-const r = db.Reader;
-
 const Session = db.Session;
 
 const Employee = models.Employee;
@@ -13,7 +11,6 @@ const Company = models.Company;
 const Person = models.Person;
 
 const notFoundError = errors.notFoundError;
-const conflictError = errors.conflictError;
 const badRequestError = errors.badRequestError;
 
 module.exports = require('express-promise-router')()
@@ -60,48 +57,6 @@ module.exports = require('express-promise-router')()
     return Session.exec(() => Employee.openId(id))
         .tap(employee => employee || notFoundError('employee'))
         .tap(employee => res.json(employee));
-})
-
-// TODO(kko): unfortunately this does not work
-.put('/:employeeId/picture', (req, res) => {
-    const id = req.params.employeeId;
-    const image = req.body.Picture;
-    return Session.transact(() => Employee.existsId(id)
-        .tap(exists => exists || notFoundError('employee'))
-        .flatMap(() => {
-            return r(connection => {
-                // TODO(kko): Upadating an image not working
-
-                const binary = Buffer.from(image, 'base64').toString('ascii');
-
-                console.log(binary);
-
-                console.log(binary.length);
-
-                // TODO(kko): I really need some support for binary type on cacheodbc level
-                return connection
-                    // DML prepared statements bug - they cannot be used more than once
-                    // Fix - reimplement execute in nanodbc library
-                    .forcePrepareStatementPromise(
-                        'UPDATE Sample.Employee AS e'
-                        + ' SET e.Picture = CAST(? AS VARBINARY(2048))'
-                        + ' WHERE e.ID = ?')
-                    .then(statement => statement.executePromise([binary, id]));
-            });
-        }))
-        .then(() => res.json("acknowledged"));
-})
-.get('/:employeeId/picture', (req, res) => {
-    const id = req.params.employeeId;
-
-    return Session.exec(() => Employee.openId(id, ['Picture']))
-        .tap(employee => employee || notFoundError('employee'))
-        .then(employee => employee['Picture'])
-        .tap(picture => {
-            res.status(200)
-                .header('Content-Type', 'image/png')
-                .send(new Buffer(picture, 'binary'));
-        });
 })
 .get('/:employeeId/spouse', (req, res) => {
     const id = req.params.employeeId;
