@@ -1,0 +1,74 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="index.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.1/vue-router.js"></script>
+    </head>
+    <body>
+        
+        <div id="app">
+            <router-view></router-view>
+        </div>
+        
+        <script type="text/x-template" id="companies-list-template">
+            <div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Name</th>
+                            <th>Revenue</th>
+                            <th>Mission</th>
+                        </tr>
+                        <tr v-for="company in companies">
+                            <td>
+                                <router-link v-bind:to="'/company/' + company.ID + '/employees'">
+                                    {{company.Name}}
+                                </router-link>
+                            </td>
+                            <td>{{company.Revenue}}</td>
+                            <td>{{company.Mission}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </script>
+
+        <script type="text/x-template" id="employees-list-template">
+            <div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Name</th>
+                            <th>SSN</th>
+                        </tr>
+                        <tr v-for="employee in employees">
+                            <td>
+                                <router-link v-bind:to="'/employee/' + employee.ID + '/employees'">
+                                    {{enployee.Name}}
+                                </router-link>
+                            </td>
+                            <td>{{employee.SSN}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </script>
+
+        <script type="text/x-template" id="employees-view-template">
+            <form>
+                <fieldset>
+                    <legend>Employee detailed information</legend>
+                    <p><label for="name">Name <em>*</em></label><input type="text">{{}}</p>
+                    <p><label for="email">E-mail</label><input type="email" id="email"></p>
+                </fieldset>
+                <p><input type="submit" value="Submit"></p>
+            </form>
+        </script>
+
+        <script type="text/x-template" id="employees-input-template">
+        
+        </script>
+
+        <script src="index.js"></script>
+    </body>
+</html>
