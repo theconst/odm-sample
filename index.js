@@ -43,9 +43,14 @@ app.use((err, _1, res, _2) => {
         const msg = err.message;
         const matches = msg && msg.match(/\[Native Code (\d+)\]/m);
         const code = matches && matches[1];
+
+        const humanReadableMessage = {
+            '105': 'Validation Error'
+        }[code] || 'Internal Server Error';
+
         return res.status(500)
             .json({
-                'message': 'Internal Server Error',
+                'message': humanReadableMessage,
                 'code': code,
             });
     }
