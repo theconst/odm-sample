@@ -1,5 +1,52 @@
 'use strict';
 
+var Greeting = Vue.component('greeting', {
+    template: '#greeting'
+});
+
+var Cell = Vue.component('cell', {
+    template: '#cell',
+    props: {
+        value: {},
+        type: {
+            default: "text",
+            type: String
+        },
+        throttle: {
+            default: 500,
+            type: Number
+        },
+        debounce: {
+            default: 100,
+            type: Number
+        },
+        readonly: {
+            type: Boolean,
+            default: true
+        }
+    },
+    data: function() {
+        return {
+            freezed: this.readonly
+        }
+    },
+    computed: {
+        debounceEmit: function() {
+            return _.debounce(_.throttle(function(event) {
+                this.$emit('input', event.target.value);
+            }, this.throttle).bind(this), this.debounce);
+        }
+    },
+    methods: {
+        unfreeze: function() {
+            this.freezed = false;
+        },
+        freeze: function() {
+            this.freezed = true;
+        }
+    }
+});
+
 var Companies = Vue.component('companies-list', {
     template: '#companies-list-template',
     data: function() {
@@ -37,12 +84,17 @@ var Employee = Vue.component('employee-details', {
     data: function() {
         return {
             employee: {},
-            company: {},
-            view: true
+            company: {}
         }
     },
     mounted: function() {
         var component = this;
+
+        ['Name', 'Title', 'Notes', 'Salary', 'Office_City'].forEach(function(v) {
+            var n = 'employee.' + v;
+            component.$watch(n, createEmployeeWatcher.bind(component)(n));
+        });
+
         fetchJson(this.$route.path).then(function(result) {
             component.employee = result;
 
@@ -51,7 +103,8 @@ var Employee = Vue.component('employee-details', {
                     component.company =company;
                 });
         });
-    }
+
+    },
 });
 
 var app = new Vue({ 
@@ -68,11 +121,15 @@ var app = new Vue({
             },
             {
                 path: '/employee/:id',
-                component: Employee,
+                component: Employee
+            },
+            {
+                path: '/',
+                component: Greeting
             },
             {
                 path: '*',
-                redirect: '/company/list'
+                redirect: '/'
             }
         ]
     })
@@ -87,4 +144,25 @@ function fetchJson(path) {
         .then(function(res) {
             return res.json();
         });
+}
+
+function createEmployeeWatcher(name) {
+    const self = this;
+    return function(value, oldValue) {
+        if (value === oldValue) {
+            return;
+        }
+
+        fetch('/employee/', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "ID": self.employee.ID,
+                [name]: value
+            })
+        });
+        // TODO(kko): catch errors
+    };
 }

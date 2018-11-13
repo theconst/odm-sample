@@ -1,92 +1,150 @@
 <html>
     <head>
         <link rel="stylesheet" href="index.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.1/vue-router.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
     </head>
     <body>
         
         <div id="app">
+            <div class="navbar navbar-expand-sm bg-light">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/company/list">Companies</a>
+                    </li>
+                    <!-- <li class="nav-item">
+                        <a class="nav-link" href="#">Employees</a>
+                    </li> -->
+                </ul>
+            </div>
             <router-view></router-view>
         </div>
-        
+
+        <script type="text/x-template" id="greeting">
+            <div class="jumbotron bg-light">
+                <h1>Welcome</h1>
+                <p class="lead">This is a demo application for Cache ODM</p>
+                <hr class="my-4" />
+                <p>Navigate through the pages to view company and employee details</p>
+                <p>You can change employee details by double clicking on the cell you want</p>
+                <hr class="my-4" />
+                <p>
+                    Leave your comments at <a href="https://github.com/theconst/cache-odm">ODM</a>,
+                    <a href="https://github.com/theconst/odm-sample">sample</a> and
+                    <a href="https://github.com/theconst/aodbc"></a>
+                </p>
+            </div>
+        </script>
+
+        <script type="text/x-template" id="cell">
+            <td title="Double click to edit">
+                <input class="cell-input"
+                    v-bind:value="value"
+                    v-on:input="debounceEmit"
+                    v-bind:type="type" 
+                    v-bind:readonly="freezed"
+                    v-on:dblclick="unfreeze" />
+            </td>
+        </script>
+    
         <script type="text/x-template" id="companies-list-template">
             <div>
-                <table class="blueTable content">
+                <table class="table table-light table-striped">
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>Name</th>
                             <th>Revenue</th>
                             <th>Mission</th>
                         </tr>
                     </thead>
-                    <tr v-for="company in companies">
-                        <td>
-                            <router-link v-bind:to="'/company/' + company.ID + '/employees'">
-                                {{company.Name}}
-                            </router-link>
-                        </td>
-                        <td>{{company.Revenue}}</td>
-                        <td>{{company.Mission}}</td>
-                    </tr>
+                    <tbody>
+                        <tr v-for="(company, index) in companies">
+                            <td>{{index + 1}}</td>
+                            <td>
+                                <router-link v-bind:to="'/company/' + company.ID + '/employees'">
+                                    {{company.Name}}
+                                </router-link>
+                            </td>
+                            <td>{{company.Revenue}}</td>
+                            <td>{{company.Mission}}</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </script>
 
         <script type="text/x-template" id="employees-list-template">
             <div>
-                <table class="blueTable content">
+                <table class="table table-light table-striped">
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>Name</th>
                             <th>Position</th>
                             <th>Location</th>
                         </tr>
                     </thead>
-                    <tr v-for="employee in employees" track-by="ID">
-                        <td>
-                            <router-link v-bind:to="'/employee/' + employee.ID">
-                                {{employee.Name}}
-                            </router-link>
-                        </td>
-                        <td>{{employee.Title || 'Contractor'}}</td>
-                        <td>{{employee.Office_City || 'Remote'}}</td>
-                    </tr>
+                    <tbody>
+                        <tr v-for="(employee, index) in employees" track-by="ID">
+                            <th scope="row">{{index + 1}}</th>
+                            <td>
+                                <router-link v-bind:to="'/employee/' + employee.ID">
+                                    {{employee.Name}}
+                                </router-link>
+                            </td>
+                            <td>{{employee.Title}}</td>
+                            <td>{{employee.Office_City}}</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </script>
 
         <script type="text/x-template" id="employee-template">
-            <table class="blueTable content">
+            <table class="table table-light table-striped">
                 <thead>
                     <tr>
-                        <td colspan="2" class="summary">Employee details for {{employee.SSN}}</td>
+                        <td colspan="2" class="text-center">
+                            <h2>Employee details for {{employee.SSN}}</h2>
+                        </td>
                     </tr>
                 </thead>
-                <tr>
-                    <td>Name</td>
-                    <td>{{employee.Name}}</td>
-                </tr>
-                <tr>
-                    <td>Title</td>
-                    <td>{{employee.Title}}</td>
-                </tr>
-                <tr>
-                    <td>Salary</td>
-                    <td>{{employee.Salary}}</td>
-                </tr>
-                <tr>
-                    <td>Age</td>
-                    <td>{{employee.Age}}</td>
-                </tr>
-                <tr>
-                    <td>Company</td>
-                    <td><router-link to="/company/list">{{company.Name}}</router-link></td>
-                </tr>   
-                <tr>
-                    <td>Short bio</td>
-                    <td>{{employee.Notes}}</td>
-                </tr>
+                <tbody>
+                    <tr>
+                        <th scope="row">Name</th>
+                        <cell v-model="employee.Name" />
+                    </tr>
+                    <tr>
+                        <th scope="row">Title</th>
+                        <cell v-model="employee.Title" />
+                    </tr>
+                    <tr>
+                        <th scope="row">Salary</th>
+                        <cell v-model="employee.Salary" type="number" />
+                    </tr>
+                    <tr>
+                        <th scope="row">Company</th>
+                        <td>
+                            <router-link v-bind:to="'/company/' + company.ID + '/employees'">
+                                {{company.Name}}
+                            </router-link>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Short bio</th>
+                        <cell v-model="employee.Notes" />
+                    </tr>
+                    <tr>
+                        <th scope="row">Location</th>
+                        <cell v-model="employee.Office_City" />
+                    </tr>
+                </tbody>
             </table>
         </script>
 
