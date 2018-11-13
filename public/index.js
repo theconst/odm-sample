@@ -100,11 +100,33 @@ var Employee = Vue.component('employee-details', {
 
             fetchJson('/company/' + result.Company)
                 .then(function(company) {
-                    component.company =company;
+                    component.company = company;
                 });
         });
 
     },
+});
+
+var EmployeeForm = Vue.component('employee-form', {
+    template: '#employee-form',
+    data: function() {
+        return {
+            employee: {}
+        }
+    },
+    methods: {
+        createEmployee: function() {
+            fetch(this.$route.path, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(_.assign(this.employee, {
+                    company: this.$route.query.company
+                }))
+            });
+        }
+    }
 });
 
 var app = new Vue({ 
@@ -122,6 +144,10 @@ var app = new Vue({
             {
                 path: '/employee/:id',
                 component: Employee
+            },
+            {
+                path: '/employee',
+                component: EmployeeForm
             },
             {
                 path: '/',

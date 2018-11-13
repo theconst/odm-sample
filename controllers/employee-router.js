@@ -16,6 +16,7 @@ const badRequestError = errors.badRequestError;
 module.exports = require('express-promise-router')()
 .post('/', (req, res) => {
     const employeeFields = req.body;
+    console.log(JSON.stringify(employeeFields));
     if (employeeFields.ID) {
         badRequestError('Use put method for existing employees');
     }
