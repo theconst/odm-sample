@@ -4,7 +4,7 @@ const db = require('./db');
 const Persistent = db.Persistent;
 const r = db.Reader;
 
-const employeeFindAllProjection = [ 'ID', 'SSN', 'Name'];
+const employeeFindAllProjection = [ 'ID', 'Name', 'Title', 'Office_City' ];
 
 module.exports = {
     Employee: class Employee extends Persistent {

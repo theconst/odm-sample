@@ -26,8 +26,9 @@ module.exports = require('express-promise-router')()
 .put('/', (req, res) =>  {
     const employee = req.body;
 
-    return Session.transact(() => Employee.openId(employee.ID, [])
-        .flatMap((employeeToUpdate) => {
+    return Session.transact(() => Employee.openId(employee.ID, ['ID'])
+        .tap(employee => employee || notFoundError('employee'))
+        .flatMap(employeeToUpdate => {
             return Object.assign(employeeToUpdate, employee).update();
         }))
         .tap(() => res.sendStatus(200));
