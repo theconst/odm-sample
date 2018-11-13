@@ -6,6 +6,7 @@ const connectionString = process.env.DSN;
 
 if (!connectionString) {
     console.error("Set DSN environmental variable to launch the server");
+    process.exit(1);
 }
 
 module.exports = orm({
