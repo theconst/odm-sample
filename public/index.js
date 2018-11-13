@@ -84,7 +84,8 @@ var Employee = Vue.component('employee-details', {
     data: function() {
         return {
             employee: {},
-            company: {}
+            company: {},
+            error: ""
         }
     },
     mounted: function() {
@@ -101,7 +102,8 @@ var Employee = Vue.component('employee-details', {
             fetchJson('/company/' + result.Company)
                 .then(function(company) {
                     component.company = company;
-                });
+                })
+                .catch(handleError.bind(this));
         });
 
     },
@@ -111,11 +113,13 @@ var EmployeeForm = Vue.component('employee-form', {
     template: '#employee-form',
     data: function() {
         return {
-            employee: {}
+            employee: {},
+            error: ""
         }
     },
     methods: {
         createEmployee: function() {
+            var component = this;
             fetch(this.$route.path, {
                 method: 'POST',
                 headers: {
@@ -124,7 +128,8 @@ var EmployeeForm = Vue.component('employee-form', {
                 body: JSON.stringify(_.assign(this.employee, {
                     company: this.$route.query.company
                 }))
-            });
+            })
+            .catch(handleError.bind(this));
         }
     }
 });
@@ -173,22 +178,28 @@ function fetchJson(path) {
 }
 
 function createEmployeeWatcher(name) {
-    const self = this;
     return function(value, oldValue) {
         if (value === oldValue) {
             return;
         }
-
         fetch('/employee/', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                "ID": self.employee.ID,
+                "ID": this.employee.ID,
                 [name]: value
             })
-        });
-        // TODO(kko): catch errors
+        })
+        .then(handleError.bind(this));
     };
+}
+
+function handleError(response) {
+    if (response.ok) {
+        this.error = "";
+        return;
+    }
+    this.error = response.statusText;
 }

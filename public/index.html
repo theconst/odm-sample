@@ -17,9 +17,6 @@
                     <li class="nav-item">
                         <router-link class="nav-link" to="/company/list">Companies</a>
                     </li>
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" href="#">Employees</a>
-                    </li> -->
                 </ul>
             </div>
             <router-view></router-view>
@@ -38,6 +35,8 @@
                     <a href="https://github.com/theconst/odm-sample">sample</a> and
                     <a href="https://github.com/theconst/aodbc">ODBC for cache</a>
                 </p>
+                <hr class="my-4" />
+                <p>Click <router-link to="/company/list">Demo</router-link> to start !</p>
             </div>
         </script>
 
@@ -114,98 +113,104 @@
         </script>
 
         <script type="text/x-template" id="employee-form">
-            <form class="m-5">
-                <div class="form-group row">
-                    <label for="SSN" class="col-2 col-form-label">SSN</label>
-                    <div class="col-10">
-                        <input type="text" class="form-control" v-model.trim="employee.SSN" aria-describedby="ssnHelp" placeholder="XXX-XX-XXXX" />
-                        <small id="ssnHelp" class="form-text text-muted">SSN in format: XXX-XX-XXXX</small>
+            <div>
+                <form class="m-5">
+                    <div class="form-group row">
+                        <label for="SSN" class="col-2 col-form-label">SSN</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" v-model.trim="employee.SSN" aria-describedby="ssnHelp" placeholder="XXX-XX-XXXX" />
+                            <small id="ssnHelp" class="form-text text-muted">SSN in format: XXX-XX-XXXX</small>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group row">
-                    <label for="Name" class="col-2 col-form-label">Name</label>
-                    <div class="col-10">
-                        <input type="text" class="form-control" v-model="employee.Name" placeholder="Name" />
+                    <div class="form-group row">
+                        <label for="Name" class="col-2 col-form-label">Name</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" v-model="employee.Name" placeholder="Name" />
+                        </div>
                     </div>
-                </div>
-                <div class="form-group row">
-                    <label for="Title" class="col-2 col-form-label">Title</label>
-                    <div class="col-10">
-                        <input type="text" class="form-control" v-model="employee.Title" placeholder="Name" />
+                    <div class="form-group row">
+                        <label for="Title" class="col-2 col-form-label">Title</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" v-model="employee.Title" placeholder="Name" />
+                        </div>
                     </div>
-                </div>
-                <div class="form-group row">
-                    <label for="Salary" class="col-2 col-form-label">Salary</label>
-                    <div class="col-10">
-                        <input type="number" class="form-control" v-model="employee.Salary" />
+                    <div class="form-group row">
+                        <label for="Salary" class="col-2 col-form-label">Salary</label>
+                        <div class="col-10">
+                            <input type="number" class="form-control" v-model="employee.Salary" />
+                        </div>
                     </div>
-                </div>
-                <div class="form-group row">
-                    <label for="Bio" class="col-2 col-form-label">Short bio</label>
-                    <div class="col-10">
-                        <input type="text" rows="5" class="form-control" v-model="employee.Notes" />
+                    <div class="form-group row">
+                        <label for="Bio" class="col-2 col-form-label">Short bio</label>
+                        <div class="col-10">
+                            <input type="text" rows="5" class="form-control" v-model="employee.Notes" />
+                        </div>
                     </div>
-                </div>
-                <div class="form-group row">
-                    <label for="Location" class="col-2 col-form-label">Location</label>
-                    <div class="col-10">
-                        <input type="text" class="form-control" v-model="employee.Office_City" />
+                    <div class="form-group row">
+                        <label for="Location" class="col-2 col-form-label">Location</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" v-model="employee.Office_City" />
+                        </div>
                     </div>
-                </div>
-                <div class="form-group row">
-                    <label for="DOB" class="col-2 col-form-label">Date of birth</label>
-                    <div class="col-10">
-                        <input type="date" class="form-control" v-model="employee.DOB" />
+                    <div class="form-group row">
+                        <label for="DOB" class="col-2 col-form-label">Date of birth</label>
+                        <div class="col-10">
+                            <input type="date" class="form-control" v-model="employee.DOB" />
+                        </div>
                     </div>
-                </div>
-                <button type="button" v-on:click="createEmployee" class="btn btn-primary">Submit</button>
-            </form>
+                    <button type="button" v-on:click="createEmployee" class="btn btn-primary">Submit</button>
+                </form>
+                <div class="text-center bg-danger">{{error}}</div>
+            </div>
         </script>
 
         <script type="text/x-template" id="employee-template">
-            <table class="table table-light table-striped table-hover">
-                <thead>
-                    <tr>
-                        <td colspan="2" class="text-center">
-                            <h2>Employee details for {{employee.SSN}}</h2>
-                        </td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">Name</th>
-                        <cell v-model="employee.Name" />
-                    </tr>
-                    <tr>
-                        <th scope="row">Title</th>
-                        <cell v-model="employee.Title" />
-                    </tr>
-                    <tr>
-                        <th scope="row">Salary</th>
-                        <cell v-model="employee.Salary" type="number" />
-                    </tr>
-                    <tr>
-                        <th scope="row">Company</th>
-                        <td>
-                            <router-link v-bind:to="'/company/' + company.ID + '/employees'">
-                                {{company.Name}}
-                            </router-link>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Short bio</th>
-                        <cell v-model="employee.Notes" />
-                    </tr>
-                    <tr>
-                        <th scope="row">Location</th>
-                        <cell v-model="employee.Office_City" />
-                    </tr>
-                    <tr>
-                        <th scope="row">Age</th>
-                        <cell v-model="employee.Age" />
-                    </tr>
-                </tbody>
-            </table>
+            <div>
+                <table class="table table-light table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <td colspan="2" class="text-center">
+                                <h2>Employee details for {{employee.SSN}}</h2>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Name</th>
+                            <cell v-model="employee.Name" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Title</th>
+                            <cell v-model="employee.Title" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Salary</th>
+                            <cell v-model="employee.Salary" type="number" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Company</th>
+                            <td>
+                                <router-link v-bind:to="'/company/' + company.ID + '/employees'">
+                                    {{company.Name}}
+                                </router-link>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Short bio</th>
+                            <cell v-model="employee.Notes" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Location</th>
+                            <cell v-model="employee.Office_City" />
+                        </tr>
+                        <tr>
+                            <th scope="row">Age</th>
+                            <th>{{employee.Age}}</th>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="text-center bg-danger">{{error}}</div>
+            </div>
         </script>
 
         <script src="index.js"></script>
