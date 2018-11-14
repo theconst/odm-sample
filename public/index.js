@@ -111,7 +111,7 @@ var Employee = Vue.component('employee-details', {
 
             fetchJson(companyRoute)
                 .then(function(company) {
-                    _.assign(component.company, company);
+                    component.company = company;
                 })
                 .catch(handleError.bind(this));
             
@@ -133,7 +133,6 @@ var EmployeeForm = Vue.component('employee-form', {
     },
     methods: {
         createEmployee: function() {
-            var component = this;
             fetch(this.$route.path, {
                 method: 'POST',
                 headers: {
