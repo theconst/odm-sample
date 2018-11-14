@@ -11,7 +11,9 @@ if (!connectionString) {
 
 module.exports = orm({
     'dsn': connectionString,
-    'loggerLevel': 'debug',
+    'logLevel': 'info',
     'defaultNamespace': 'Sample',
+    "poolSizeMin":  3,
+    "poolSizeMax": 10
 });
 

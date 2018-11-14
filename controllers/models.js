@@ -4,7 +4,7 @@ const db = require('./db');
 const Persistent = db.Persistent;
 const r = db.Reader;
 
-const employeeFindAllProjection = [ 'ID', 'Name', 'Title', 'Office_City' ];
+const employeeFindAllProjection = [ 'ID', 'Name', 'Title', 'Office_City', 'Salary' ];
 
 module.exports = {
     Employee: class Employee extends Persistent {
@@ -50,7 +50,17 @@ module.exports = {
                     FROM Sample.Company AS c JOIN Sample.Employee AS e 
                     ON c.ID = e.Company
                     WHERE c.ID = ?`)
-                .then(statement => statement.queryPromise([this.ID])));
+                .then(statement => statement.queryPromise([this.ID]))
+                .then(result => {
+                    if (!result || result.length !== 1) {
+                        throw {
+                            'message': 'Query returned invalid result'
+                        }
+                    }
+                    var result = result[0];
+                    result.value = Number(result.value);
+                    return result;
+                }));
         }
     },
 

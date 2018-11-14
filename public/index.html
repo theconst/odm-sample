@@ -63,7 +63,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(company, index) in companies">
+                        <tr v-for="(company, index) in companies" track-by="ID">
                             <td>{{index + 1}}</td>
                             <td>
                                 <router-link v-bind:to="'/company/' + company.ID + '/employees'">
@@ -87,6 +87,7 @@
                             <th>Name</th>
                             <th>Position</th>
                             <th>Location</th>
+                            <th>Salary</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -99,11 +100,16 @@
                             </td>
                             <td>{{employee.Title}}</td>
                             <td>{{employee.Office_City}}</td>
+                            <td>{{employee.Salary}}</td>
                         </tr>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="4" class="text-center">
+                            <td colspan="4" class="text-center font-weight-bold">Average salary</td>
+                            <td>{{company.averageSalary}}</td>
+                        </td>
+                        <tr>
+                            <td colspan="5" class="text-center">
                                 <router-link v-bind:to="'/employee?company=' + $route.params.id">Add new employee</router-link>
                             </td>
                         </tr>

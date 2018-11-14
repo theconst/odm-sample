@@ -67,15 +67,28 @@ var Employees = Vue.component('employees-list', {
     template: '#employees-list-template',
     data: function() {
         return {
-            employees: []
+            employees: [],
+            company: {}
         };
     },
     mounted: function() {
         var component = this;
-        fetchJson(this.$route.path).then(sortByName)
+        var companyEmployeRoute = this.$route;
+
+        fetchJson('/company/' + companyEmployeRoute.params.id + '/averageSalary')
+            .then(function(result) {
+                var value = result.value;
+                _.assign(component.company, {
+                    'averageSalary': value.toFixed(2)
+                });
+            })
+            .catch(handleError.bind(this));
+
+        fetchJson(companyEmployeRoute.path).then(sortByName)
             .then(function(sortedByName){
                 component.employees = sortedByName;
-            });
+            })
+            .catch(handleError.bind(this));
     }
 });
 
@@ -91,21 +104,22 @@ var Employee = Vue.component('employee-details', {
     mounted: function() {
         var component = this;
 
-        ['Name', 'Title', 'Notes', 'Salary', 'Office_City'].forEach(function(v) {
-            var n = 'employee.' + v;
-            component.$watch(n, createEmployeeWatcher.bind(component)(n));
-        });
-
         fetchJson(this.$route.path).then(function(result) {
             component.employee = result;
 
-            fetchJson('/company/' + result.Company)
+            var companyRoute = '/company/' + result.Company;
+
+            fetchJson(companyRoute)
                 .then(function(company) {
-                    component.company = company;
+                    _.assign(component.company, company);
                 })
                 .catch(handleError.bind(this));
+            
+            ['Name', 'Title', 'Notes', 'Salary', 'Office_City'].forEach(function(v) {
+                var n = 'employee.' + v;
+                component.$watch(n, createEmployeeWatcher.bind(component)(n));
+            });
         });
-
     },
 });
 
