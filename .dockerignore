@@ -1,0 +1,6 @@
+# Require full rebuild of dependencies
+
+node_modules/**
+package-lock.json
+.git
+.gitignore
