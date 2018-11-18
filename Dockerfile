@@ -34,6 +34,7 @@ COPY ./scripts ./scripts
 RUN chmod +x ./scripts/odbc-install.sh && ./scripts/odbc-install.sh
 
 COPY . .
+RUN chmod +x ./scripts/setenv.sh && ./scripts/setenv.sh
 RUN cp -rf "config/" /etc/
 
 RUN npm install --unsafe-perm
