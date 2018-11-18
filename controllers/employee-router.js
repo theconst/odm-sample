@@ -36,7 +36,7 @@ module.exports = require('express-promise-router')()
 })
 .delete('/:employeeId', (req, res) => {
     const id = req.params.employeeId;
-    return Session.transact(() => employee.deleteId(id))
+    return Session.transact(() => Employee.deleteId(id))
         .tap(() => res.json("acknowledged"));
 })
 .get('/list', (_, res) => {
