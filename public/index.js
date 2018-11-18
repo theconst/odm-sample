@@ -133,6 +133,7 @@ var EmployeeForm = Vue.component('employee-form', {
     },
     methods: {
         createEmployee: function() {
+			var router = this.$router;
             fetch(this.$route.path, {
                 method: 'POST',
                 headers: {
@@ -142,6 +143,9 @@ var EmployeeForm = Vue.component('employee-form', {
                     company: this.$route.query.company
                 }))
             })
+			.then(function() {
+				router.go(-1);
+			})
             .catch(handleError.bind(this));
         }
     }
