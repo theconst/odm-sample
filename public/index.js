@@ -143,8 +143,12 @@ var EmployeeForm = Vue.component('employee-form', {
                     company: this.$route.query.company
                 }))
             })
-			.then(function() {
-				router.go(-1);
+			.then(function(response) {
+				if (response.status === 200) {
+					router.go(-1);
+				} else {
+					throw response;
+				}
 			})
             .catch(handleError.bind(this));
         }
@@ -218,5 +222,12 @@ function handleError(response) {
         this.error = "";
         return;
     }
-    this.error = response.statusText;
+	var self = this;
+	return response.json()
+		.then(function(json) {
+			self.error = json.message;
+		})
+		.catch(function() {
+			 self.error = response.statusText;
+		});
 }
