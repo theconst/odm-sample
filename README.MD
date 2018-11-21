@@ -16,14 +16,15 @@ to run the sample
 1. Install node.js: https://nodejs.org/en/
 2. Install homebrew (it makes a lot of steps a lot more easier)
    > ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null 2> /dev/null
-3. Install unixodbc
+3. Install unixodbc and gcc@6
    > brew install unixodbc
+   > brew install gcc@6
 4. Download Cache ODBC driver:
    ftp://ftp.intersys.com/pub/cache/odbc/2018/ODBC-2018.1.0.184.0-macx64.tar.gz
    Untar the archive and run `./ODBCinstall` in the installation directory
 5. Edit configuration files `odbc.ini` and `odbcinst.ini` to point to the location where the 
    ODBC library was installed.
-6. Copy `odbc.ini` and `odbcinst.ini` to `/etc` folder.
+6. Copy `odbc.ini` and `odbcinst.ini` to `/usr/local/etc` folder.
 7. Change network host in `odbc.ini` to point to the Cache instance (typically 127.0.0.1) if 
    you are running DB on the same host. You may also tweak and adjust other configuration if
    you find it necessary (e. g. you are running on non-default port).
