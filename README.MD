@@ -1,4 +1,4 @@
-# Demonstration application for Cache ODB
+# Demonstration application for Cache ODM
 This is a demo application that demonstrates usage of Cache ODM.
 
 ## Prerequisites
